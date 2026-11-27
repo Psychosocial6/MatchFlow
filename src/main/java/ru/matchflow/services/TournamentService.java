@@ -1,5 +1,7 @@
 package ru.matchflow.services;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -11,10 +13,12 @@ import ru.matchflow.entities.Sport;
 import ru.matchflow.entities.Tournament;
 import ru.matchflow.entities.UserAccount;
 import ru.matchflow.exceptions.custom.SportNotFoundException;
+import ru.matchflow.exceptions.custom.TournamentNotFoundException;
 import ru.matchflow.exceptions.custom.UserNotFoundException;
 import ru.matchflow.repositories.SportRepository;
 import ru.matchflow.repositories.TournamentRepository;
 import ru.matchflow.repositories.UserRepository;
+import ru.matchflow.utils.TournamentManagementValidator;
 import ru.matchflow.utils.TournamentMapper;
 
 @Service
@@ -25,11 +29,12 @@ public class TournamentService {
     private final SportRepository sportRepository;
     private final UserRepository userRepository;
     private final TournamentMapper tournamentMapper;
+    private final TournamentManagementValidator validator;
 
     @Transactional
-    public TournamentResponse createTournament(TournamentRequest request, int adminId) {
+    public TournamentResponse createTournament(Integer userId, TournamentRequest request) {
         Tournament tournament = new Tournament(
-                resolveUser(adminId),
+                resolveUser(userId),
                 resolveSport(request.sportId()),
                 request.title(),
                 request.regulations(),
@@ -48,7 +53,7 @@ public class TournamentService {
     }
 
     @Transactional(readOnly = true)
-    public TournamentResponse getTournamentById(int id) {
+    public TournamentResponse getTournamentById(Integer id) {
         Tournament tournament = tournamentRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tournament not found"));
         return tournamentMapper.fromEntity(tournament);
@@ -71,5 +76,35 @@ public class TournamentService {
     private Sport resolveSport(int id) {
         return sportRepository.findById(id)
                 .orElseThrow(() -> new SportNotFoundException("Sport not found"));
+    }
+
+    @Transactional
+    public TournamentResponse updateTournament(
+            Integer userId,
+            Integer tournamentId,
+            TournamentRequest request
+    ) {
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new TournamentNotFoundException("Tournament not found"));
+        validator.validate(resolveUser(userId), tournament);
+        tournament.setSport(resolveSport(request.sportId()));
+        tournament.setTitle(request.title());
+        tournament.setRegulations(request.regulations());
+        tournament.setParticipationType(request.participationType());
+        tournament.setFormat(request.format());
+        tournament.setRegStartDate(request.regStartDate());
+        tournament.setRegEndDate(request.regEndDate());
+        tournament.setStartDate(request.startDate());
+        tournament.setEndDate(request.endDate());
+        tournament.setMaxParticipants(request.maxParticipants());
+
+        return tournamentMapper.fromEntity(tournamentRepository.save(tournament));
+    }
+
+    public void deleteTournament(Integer userId, Integer tournamentId) {
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new TournamentNotFoundException("Tournament not found"));
+        validator.validate(resolveUser(userId), tournament);
+        tournamentRepository.deleteById(tournamentId);
     }
 }
