@@ -6,7 +6,12 @@ import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.CodePointLength;
 
 public record LoginRequest(
-        @NotBlank @CodePointLength(max = 255) String username,
-        @NotEmpty @Size(max = 72) String password
+        @NotBlank
+        @CodePointLength(max = 255)
+        String username,
+
+        @NotEmpty
+        @Size(max = 72)
+        String password
 ) {
 }

@@ -9,30 +9,24 @@ import ru.matchflow.entities.Tournament;
 import java.time.LocalDateTime;
 
 public record TournamentRequest(
-        @NotNull @Positive Integer sportId,
-        @CodePointLength(max = 255) String title,
+        @NotNull
+        @Positive
+        Integer sportId,
+
+        @CodePointLength(max = 255)
+        String title,
+
         String regulations,
+
         @NotNull Tournament.ParticipationType participationType,
         @NotNull Tournament.Format format,
         @NotNull LocalDateTime regStartDate,
         @NotNull LocalDateTime regEndDate,
         @NotNull LocalDateTime startDate,
         @NotNull LocalDateTime endDate,
-        @NotNull @Min(2) Integer maxParticipants
+
+        @NotNull
+        @Min(2)
+        Integer maxParticipants
 ) {
-    public Tournament toEntity(int adminId) {
-        return Tournament.builder()
-                .adminId(adminId)
-                .sportId(sportId)
-                .title(title)
-                .regulations(regulations)
-                .participationType(participationType)
-                .format(format)
-                .regStartDate(regStartDate)
-                .regEndDate(regEndDate)
-                .startDate(startDate)
-                .endDate(endDate)
-                .maxParticipants(maxParticipants)
-                .build();
-    }
 }
