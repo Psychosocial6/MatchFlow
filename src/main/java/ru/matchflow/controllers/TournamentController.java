@@ -3,6 +3,7 @@ package ru.matchflow.controllers;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.matchflow.dto.TournamentRequest;
 import ru.matchflow.dto.TournamentResponse;
 import ru.matchflow.services.TournamentService;
-
-import java.net.URI;
 import java.security.Principal;
 
 @RestController
@@ -31,7 +30,7 @@ public class TournamentController {
     ) {
         int adminId = Integer.parseInt(principal.getName());
         TournamentResponse response = tournamentService.createTournament(request, adminId);
-        return ResponseEntity.created(URI.create("/api/tournaments/" + response.id()))
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
     }
 
