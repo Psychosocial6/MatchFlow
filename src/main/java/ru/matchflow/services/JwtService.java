@@ -1,7 +1,7 @@
 package ru.matchflow.services;
 
+import lombok.Getter;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -14,7 +14,6 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.stereotype.Service;
 import ru.matchflow.config.JwtProperties;
-import ru.matchflow.dto.LoginResponse;
 import ru.matchflow.entities.UserRole;
 
 import javax.crypto.SecretKey;
@@ -29,6 +28,7 @@ public class JwtService implements JwtDecoder {
     private final JwtDecoder decoder;
     private final JwsHeader header;
     private final String issuer;
+    @Getter
     private final long ttlSeconds;
 
     public JwtService(JwtProperties properties) {
@@ -45,7 +45,7 @@ public class JwtService implements JwtDecoder {
         this.decoder = jwtDecoder;
     }
 
-    public LoginResponse issueToken(int userId, UserRole role) {
+    public String generateToken(int userId, UserRole role) {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(issuer)
@@ -54,12 +54,7 @@ public class JwtService implements JwtDecoder {
                 .expiresAt(now.plusSeconds(ttlSeconds))
                 .claim(ROLE_CLAIM, role.name())
                 .build();
-        String accessToken = encoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
-        return LoginResponse.builder()
-                .accessToken(accessToken)
-                .tokenType(OAuth2AccessToken.TokenType.BEARER.getValue())
-                .expiresIn(ttlSeconds)
-                .build();
+        return encoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
     }
 
     public JwtAuthenticationConverter authenticationConverter() {

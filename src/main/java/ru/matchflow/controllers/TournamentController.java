@@ -2,6 +2,7 @@ package ru.matchflow.controllers;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,25 +19,24 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/tournaments")
+@RequiredArgsConstructor
 public class TournamentController {
+
     private final TournamentService tournamentService;
 
-    public TournamentController(TournamentService tournamentService) {
-        this.tournamentService = tournamentService;
-    }
-
     @PostMapping
-    public ResponseEntity<TournamentResponse> create(
+    public ResponseEntity<TournamentResponse> createTournament(
             Principal principal,
             @Valid @RequestBody TournamentRequest request
     ) {
         int adminId = Integer.parseInt(principal.getName());
-        TournamentResponse response = TournamentResponse.from(tournamentService.create(adminId, request));
-        return ResponseEntity.created(URI.create("/api/tournaments/" + response.id())).body(response);
+        TournamentResponse response = tournamentService.createTournament(request, adminId);
+        return ResponseEntity.created(URI.create("/api/tournaments/" + response.id()))
+                .body(response);
     }
 
     @GetMapping("/{id}")
-    public TournamentResponse getById(@Positive @PathVariable int id) {
-        return TournamentResponse.from(tournamentService.getById(id));
+    public ResponseEntity<TournamentResponse> getById(@Positive @PathVariable int id) {
+        return ResponseEntity.ok(tournamentService.getTournamentById(id));
     }
 }

@@ -21,7 +21,7 @@ public record TournamentResponse(
         LocalDateTime endDate,
         int maxParticipants
 ) {
-    public static TournamentResponse from(Tournament tournament) {
+    public static TournamentResponse fromEntity(Tournament tournament) {
         return builder()
                 .id(tournament.getId())
                 .adminId(tournament.getAdminId())
