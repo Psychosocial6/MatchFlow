@@ -17,6 +17,12 @@ public class DatabaseExceptionHandler {
         }
 
         return switch (violation.getConstraintName()) {
+            case "users_username_key", "users_email_key" ->
+                    ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Username or email already exists");
+            case "users_vk_id_key" ->
+                    ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "This VK ID is already linked");
+            case "chk_users_email_format" ->
+                    ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid email address");
             case "teams_name_key" -> ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Team name already exists");
             case "teams_tag_key" -> ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Team tag already exists");
             case "fk_tournaments_sport" -> ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, "Sport not found");

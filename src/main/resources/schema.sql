@@ -51,7 +51,7 @@ $$;;
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
-    email VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) UNIQUE,
     password VARCHAR(255),
     name VARCHAR(255),
     surname VARCHAR(255),
@@ -61,9 +61,32 @@ CREATE TABLE IF NOT EXISTS users (
     CONSTRAINT chk_users_email_format CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
 );;
 
+ALTER TABLE users ALTER COLUMN email DROP NOT NULL;;
+
+DO $$
+BEGIN
+    ALTER TABLE users ADD CONSTRAINT chk_users_password_email
+        CHECK (password IS NULL OR email IS NOT NULL);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END;
+$$;;
+
 ALTER TABLE users
     ADD COLUMN IF NOT EXISTS role VARCHAR(16) NOT NULL DEFAULT 'USER'
         CONSTRAINT chk_users_role CHECK (role IN ('ADMIN', 'USER'));;
+
+ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS email_verification_required BOOLEAN NOT NULL DEFAULT FALSE,
+    ADD COLUMN IF NOT EXISTS email_verified_at TIMESTAMP WITH TIME ZONE;;
+
+CREATE TABLE IF NOT EXISTS email_verification_tokens (
+    user_id INTEGER PRIMARY KEY,
+    token_hash VARCHAR(64) NOT NULL UNIQUE,
+    issued_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    CONSTRAINT fk_email_verification_user FOREIGN KEY (user_id) REFERENCES users (id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);;
 
 CREATE TABLE IF NOT EXISTS password_reset_tokens (
     id SERIAL PRIMARY KEY,

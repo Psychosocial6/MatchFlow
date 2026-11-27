@@ -2,4 +2,4 @@
 /.idea/
 *.iml
 /.env
-.properties
+/.ps1

@@ -20,6 +20,7 @@ public class DatabaseUserDetailsService implements UserDetailsService {
     @Override
     public AccountUserDetails loadUserByUsername(String username) {
         UserAccount account = userRepository.findByUsername(username)
+                .filter(user -> !user.isEmailVerificationPending())
                 .filter(user -> user.getPasswordHash() != null && BCRYPT_HASH.matcher(user.getPasswordHash()).matches())
                 .orElseThrow(() -> new UsernameNotFoundException("No password account found"));
 

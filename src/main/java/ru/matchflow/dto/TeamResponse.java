@@ -16,7 +16,7 @@ public record TeamResponse(
     public static TeamResponse fromEntity(Team team) {
         return builder()
                 .id(team.getId())
-                .captainId(team.getCaptainId())
+                .captainId(team.getCaptain().getId())
                 .name(team.getName())
                 .tag(team.getTag())
                 .creationDate(team.getCreationDate())
