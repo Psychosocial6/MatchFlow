@@ -1,14 +1,18 @@
 package ru.matchflow.services;
 
+import jakarta.persistence.EntityManager;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import ru.matchflow.dto.TournamentRequest;
 import ru.matchflow.dto.TournamentResponse;
+import ru.matchflow.dto.UpdateStatusRequest;
 import ru.matchflow.entities.Sport;
 import ru.matchflow.entities.Tournament;
 import ru.matchflow.entities.UserAccount;
@@ -30,6 +34,7 @@ public class TournamentService {
     private final UserRepository userRepository;
     private final TournamentMapper tournamentMapper;
     private final TournamentManagementValidator validator;
+    private final EntityManager entityManager;
 
     @Transactional
     public TournamentResponse createTournament(Integer userId, TournamentRequest request) {
@@ -106,5 +111,18 @@ public class TournamentService {
                 .orElseThrow(() -> new TournamentNotFoundException("Tournament not found"));
         validator.validate(resolveUser(userId), tournament);
         tournamentRepository.deleteById(tournamentId);
+    }
+
+    public TournamentResponse updateStatus(
+            Integer userId,
+            Integer tournamentId,
+            UpdateStatusRequest request
+    ) {
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new TournamentNotFoundException("Tournament not found"));
+        validator.validate(resolveUser(userId), tournament);
+        tournamentRepository.setTournamentStatus(tournamentId, String.valueOf(request.status()));
+        entityManager.refresh(tournament);
+        return tournamentMapper.fromEntity(tournament);
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.matchflow.dto.TournamentRequest;
 import ru.matchflow.dto.TournamentResponse;
+import ru.matchflow.dto.UpdateStatusRequest;
 import ru.matchflow.services.TournamentService;
 
 @RestController
@@ -60,9 +62,27 @@ public class TournamentController {
             @Positive
             @PathVariable
             Integer tournamentId,
-            @RequestBody TournamentRequest request
+            @Valid
+            @RequestBody
+            TournamentRequest request
     ) {
         return ResponseEntity.ok(tournamentService.updateTournament(userId, tournamentId, request));
+    }
+
+    @PatchMapping("/{tournamentId}/status")
+    public ResponseEntity<TournamentResponse> updateStatus(
+            @NotNull
+            @Positive
+            @RequestParam
+            Integer userId,
+            @Positive
+            @PathVariable
+            Integer tournamentId,
+            @Valid
+            @RequestBody
+            UpdateStatusRequest request
+    ) {
+        return ResponseEntity.ok(tournamentService.updateStatus(userId, tournamentId, request));
     }
 
     @DeleteMapping("/{tournamentId}")
