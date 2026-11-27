@@ -24,7 +24,7 @@ public class TeamService {
     public TeamResponse createTeam(TeamRequest request, int captainId) {
         UserAccount captain = userRepository.getReferenceById(captainId);
         Team team = Team.builder()
-                .captainId(captainId)
+                .captain(captain)
                 .name(request.name())
                 .tag(request.tag())
                 .members(new HashSet<>(Set.of(captain)))
