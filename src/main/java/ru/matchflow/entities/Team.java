@@ -10,7 +10,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+<<<<<<< HEAD
 import jakarta.persistence.PrePersist;
+=======
+>>>>>>> 93f2e65bd25f1d3fffc2e9e89f3bcc6426d60622
 import jakarta.persistence.Table;
 import lombok.*;
 
@@ -27,10 +30,19 @@ public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+<<<<<<< HEAD
     @JoinColumn(name = "captain_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private UserAccount captain;
     @Column(name = "name", nullable = false)
+=======
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "captain_id", nullable = false)
+    private UserAccount captain;
+
+    @Column(nullable = false)
+>>>>>>> 93f2e65bd25f1d3fffc2e9e89f3bcc6426d60622
     private String name;
     @Column(name = "tag", length = 10)
     private String tag;

@@ -19,7 +19,7 @@ import ru.matchflow.entities.UserRole;
 import ru.matchflow.services.JwtService;
 
 @Configuration
-@EnableConfigurationProperties(JwtProperties.class)
+@EnableConfigurationProperties({JwtProperties.class, EmailVerificationProperties.class, VkAuthProperties.class})
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -32,7 +32,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> requests
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register",
+                                "/api/auth/resend-verification", "/api/auth/vk/attempts",
+                                "/api/auth/vk/login", "/api/auth/vk/register").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/", "/index.html", "/auth-lab/app.js",
+                                "/auth-lab/style.css", "/api/auth/verify-email", "/api/auth/vk/config").permitAll()
                         .anyRequest().hasAnyRole(UserRole.ADMIN.name(), UserRole.USER.name()))
                 .oauth2ResourceServer(server -> server.jwt(jwt ->
                         jwt.jwtAuthenticationConverter(jwtService.authenticationConverter())));
