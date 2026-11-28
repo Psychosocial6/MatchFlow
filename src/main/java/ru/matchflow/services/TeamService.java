@@ -23,7 +23,6 @@ public class TeamService {
     private final TeamMapper teamMapper;
 
     @Transactional
-<<<<<<< HEAD
     public TeamResponse createTeam(TeamRequest request) {
         HashSet<UserAccount> members = new HashSet<>();
         for (Integer id : request.membersId()) {
@@ -37,16 +36,6 @@ public class TeamService {
         );
         return teamMapper.fromEntity(teamRepository.save(team));
     }
-=======
-    public TeamResponse createTeam(TeamRequest request, int captainId) {
-        UserAccount captain = userRepository.getReferenceById(captainId);
-        Team team = Team.builder()
-                .captain(captain)
-                .name(request.name())
-                .tag(request.tag())
-                .members(new HashSet<>(Set.of(captain)))
-                .build();
->>>>>>> 93f2e65bd25f1d3fffc2e9e89f3bcc6426d60622
 
     //TODO: add update/delete if needed
 
