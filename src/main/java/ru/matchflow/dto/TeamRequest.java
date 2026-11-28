@@ -1,14 +1,23 @@
 package ru.matchflow.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import org.hibernate.validator.constraints.CodePointLength;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import org.hibernate.validator.constraints.Length;
+
+import java.util.Set;
 
 public record TeamRequest(
+        @NotNull
+        @Positive
+        Integer captainId,
+        @NotNull
         @NotBlank
-        @CodePointLength(max = 255)
+        @Length(max = 255)
         String name,
-
-        @CodePointLength(min = 2, max = 10)
-        String tag
+        @Length(min = 2, max = 10)
+        String tag,
+        @NotNull
+        Set<Integer> membersId
 ) {
 }

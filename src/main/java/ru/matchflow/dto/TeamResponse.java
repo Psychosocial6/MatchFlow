@@ -1,25 +1,13 @@
 package ru.matchflow.dto;
 
-import lombok.Builder;
-import ru.matchflow.entities.Team;
-
 import java.time.LocalDateTime;
 
-@Builder
 public record TeamResponse(
         int id,
-        int captainId,
+        int captainId, //TODO: return User instead of id if needed
         String name,
         String tag,
         LocalDateTime creationDate
+        //TODO: return List<User> (members) if needed
 ) {
-    public static TeamResponse fromEntity(Team team) {
-        return builder()
-                .id(team.getId())
-                .captainId(team.getCaptain().getId())
-                .name(team.getName())
-                .tag(team.getTag())
-                .creationDate(team.getCreationDate())
-                .build();
-    }
 }
