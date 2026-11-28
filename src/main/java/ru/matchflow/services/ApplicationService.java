@@ -1,8 +1,6 @@
 package ru.matchflow.services;
 
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.matchflow.dto.ApplicationRequest;
@@ -10,7 +8,6 @@ import ru.matchflow.dto.ApplicationResponse;
 import ru.matchflow.entities.Application;
 import ru.matchflow.entities.Tournament;
 import ru.matchflow.exceptions.custom.ApplicationNotFoundException;
-import ru.matchflow.exceptions.custom.TournamentNotFoundException;
 import ru.matchflow.repositories.ApplicationRepository;
 import ru.matchflow.repositories.TournamentRepository;
 import ru.matchflow.utils.ApplicationMapper;
@@ -21,7 +18,6 @@ public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
     private final ApplicationMapper applicationMapper;
-    private final TournamentRepository tournamentRepository;
 
     @Transactional
     public ApplicationResponse createApplication(ApplicationRequest request) {
