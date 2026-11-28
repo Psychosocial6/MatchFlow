@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -78,7 +79,6 @@ public class Tournament {
             String regulations,
             ParticipationType participationType,
             Format format,
-            Status status,
             LocalDateTime regStartDate,
             LocalDateTime regEndDate,
             LocalDateTime startDate,
@@ -91,12 +91,16 @@ public class Tournament {
         this.regulations = regulations;
         this.participationType = participationType;
         this.format = format;
-        this.status = status;
         this.regStartDate = regStartDate;
         this.regEndDate = regEndDate;
         this.startDate = startDate;
         this.endDate = endDate;
         this.maxParticipants = maxParticipants;
+    }
+
+    @PrePersist
+    private void prePersist() {
+        status = Status.DRAFT;
     }
 
     public enum ParticipationType {

@@ -45,7 +45,6 @@ public class TournamentService {
                 request.regulations(),
                 request.participationType(),
                 request.format(),
-                Tournament.Status.DRAFT,
                 request.regStartDate(),
                 request.regEndDate(),
                 request.startDate(),
