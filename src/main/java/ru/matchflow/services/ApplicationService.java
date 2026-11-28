@@ -1,6 +1,8 @@
 package ru.matchflow.services;
 
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.matchflow.dto.ApplicationRequest;
@@ -29,5 +31,20 @@ public class ApplicationService {
                 applicationRepository.findTopByTournamentIdAndTeamIdOrderByIdDesc(request.tournamentId(), request.teamId())
                         .orElseThrow(() -> new ApplicationNotFoundException("Application not found"))
         );
+    }
+
+    public ApplicationResponse getApplicationById(Integer id) {
+        return applicationMapper.fromEntity(
+                applicationRepository.findById(id)
+                        .orElseThrow(() -> new ApplicationNotFoundException("Application not found"))
+        );
+    }
+
+    public void approveApplication(Integer id) {
+        applicationRepository.moderateApplication(id, true);
+    }
+
+    public void rejectApplication(Integer id) {
+        applicationRepository.moderateApplication(id, false);
     }
 }
